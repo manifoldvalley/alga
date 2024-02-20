@@ -41,7 +41,9 @@ module Algebra.Graph.Labelled.AdjacencyMap (
     closure, reflexiveClosure, symmetricClosure, transitiveClosure,
 
     -- * Miscellaneous
-    consistent
+    consistent,
+
+    LabelledContext(..), getLabelledContext
     ) where
 
 import Control.DeepSeq
@@ -61,6 +63,18 @@ import qualified Data.IntSet     as IntSet
 import qualified Data.Map.Strict as Map
 import qualified Data.Set        as Set
 import Control.Monad (guard)
+
+data LabelledContext e a = LabelledContext
+  { lc_in  :: Map a e
+  , lc_out :: Map a e
+  , lc_vert :: a
+  }
+  deriving stock (Eq, Ord)
+
+getLabelledContext :: Ord a => AdjacencyMap e a -> a -> LabelledContext e a
+getLabelledContext (AM gr) a =
+  let InsAndOuts ins outs = fromMaybe (InsAndOuts Map.empty Map.empty) $ Map.lookup a gr
+   in LabelledContext ins outs a
 
 
 data InsAndOuts e a = InsAndOuts
